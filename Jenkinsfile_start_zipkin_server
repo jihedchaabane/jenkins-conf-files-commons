@@ -52,7 +52,7 @@ pipeline {
             echo 'zipkin démarré avec succès !'
         }
         failure {
-            echo 'Échec du démarrage de zipkin.'
+            echo 'Echec du démarrage de zipkin.'
         }
     }
 }
