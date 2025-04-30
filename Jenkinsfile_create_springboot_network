@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    environment {
+        DOCKER_NETWORK = 'springboot-network'
+    }
+    stages {
+
+        stage('Setup Network') {
+			steps {
+				script {
+					def networkExists = sh(script: "docker network ls | grep ${DOCKER_NETWORK}", returnStatus: true) == 0
+					if (!networkExists) {
+						sh """
+							docker network create ${DOCKER_NETWORK}
+							echo "Network ${DOCKER_NETWORK} Created and Ready"
+						"""
+					} else {
+						echo "Network ${DOCKER_NETWORK} already exists"
+					}
+				}
+			}
+		}
+    }
+    post {
+//      always {
+//      }
+        success {
+            echo 'Network springboot-network créé avec succès !'
+        }
+        failure {
+            echo 'Échec de la création du network springboot-network.'
+        }
+    }
+}
