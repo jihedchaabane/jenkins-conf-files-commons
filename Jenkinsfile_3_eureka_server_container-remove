@@ -5,12 +5,12 @@ pipeline {
     }
     stages {
 
-        stage('Stop eureka-server') {
+        stage('Stop Eureka server') {
             steps {
                 script {
-                    // Arrêter tout conteneur eureka-server existant
+                    // Supprimer tout conteneur eureka-server existant
                     sh """
-                        docker stop ${CONTAINER_NAME} || true
+                        docker rm ${CONTAINER_NAME} || true
                     """
                 }
             }
