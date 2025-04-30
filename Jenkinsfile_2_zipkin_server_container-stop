@@ -1,0 +1,30 @@
+pipeline {
+    agent any
+    environment {
+        ZIPKIN_CONTAINER_NAME = 'zipkin'
+    }
+    stages {
+
+        stage('Stop Zipkin') {
+            steps {
+                script {
+                    // Arrêter et supprimer tout conteneur Zipkin existant
+                    sh """
+                        docker stop ${ZIPKIN_CONTAINER_NAME} || true
+                        docker rm ${ZIPKIN_CONTAINER_NAME} || true
+                    """
+                }
+            }
+        }
+    }
+    post {
+//      always {
+//      }
+        success {
+            echo 'zipkin arrêté avec succès !'
+        }
+        failure {
+            echo 'Echec d arrêter zipkin !'
+        }
+    }
+}
