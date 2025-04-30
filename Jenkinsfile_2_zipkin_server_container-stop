@@ -24,7 +24,7 @@ pipeline {
             echo 'zipkin arrêté avec succès !'
         }
         failure {
-            echo 'Echec d arrêter zipkin !'
+            echo 'Echec d\'arrêter zipkin !'
         }
     }
 }
