@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    environment {
+        DOCKER_NETWORK = 'springboot-network'
+    }
+    stages {
+
+        stage('Setup Network') {
+			steps {
+				script {
+					def networkExists = sh(script: "docker network ls | grep ${DOCKER_NETWORK}", returnStatus: true) == 0
+					if (networkExists) {
+						echo "Network ${DOCKER_NETWORK} inexistante déjâ !"
+					} else {
+						sh """
+							docker network rm ${DOCKER_NETWORK}
+							echo "Network ${DOCKER_NETWORK} supprimé avec succès !"
+						"""
+					}
+				}
+			}
+		}
+    }
+    post {
+//      always {
+//      }
+        success {
+            echo 'Network springboot-network supprimée avec succès !'
+        }
+        failure {
+            echo 'Échec de la suppression du network springboot-network.'
+        }
+    }
+}
