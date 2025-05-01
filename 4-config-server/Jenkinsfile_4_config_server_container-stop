@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    environment {
+        CONTAINER_NAME = 'container-springboot-conf-config-server'
+    }
+    stages {
+
+        stage('Stop Container') {
+            steps {
+                script {
+                    // Arrêter tout conteneur existant
+                    sh """
+                        docker stop ${CONTAINER_NAME} || true
+                    """
+                }
+            }
+        }
+    }
+    post {
+//      always {
+//      }
+        success {
+            echo 'Container arrêté avec succès !'
+        }
+        failure {
+            echo 'Echec d\'arrêter Container !'
+        }
+    }
+}
