@@ -23,8 +23,11 @@ pipeline {
                     
 					// Démarrer eureka-server sur la network 'springboot-network'
                     sh """
-						docker run -d --name ${CONTAINER_NAME} --network ${DOCKER_NETWORK} -p ${APP_PORT}:${APP_PORT} \
-						--cap-add=IPC_LOCK -e 'VAULT_DEV_ROOT_TOKEN_ID=my-root-token' ${DOCKER_IMAGE}
+						docker run -d --name ${CONTAINER_NAME} --network ${DOCKER_NETWORK} \
+							--cap-add=IPC_LOCK \
+							-e 'VAULT_DEV_ROOT_TOKEN_ID=my-root-token' \
+							-p ${APP_PORT}:${APP_PORT} \
+							${DOCKER_IMAGE}
                     """
                 }
             }
