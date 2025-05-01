@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    environment {
+        CONTAINER_NAME = 'container-vault-server'
+    }
+    stages {
+
+        stage('Stop Vault Container') {
+            steps {
+                script {
+                    // Supprimer tout conteneur existant
+                    sh """
+                        docker rm ${CONTAINER_NAME} || true
+                    """
+                }
+            }
+        }
+    }
+    post {
+//      always {
+//      }
+        success {
+            echo 'Container arrêté avec succès !'
+        }
+        failure {
+            echo 'Echec de supprimer le Container !'
+        }
+    }
+}
