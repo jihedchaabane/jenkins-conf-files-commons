@@ -25,8 +25,8 @@ pipeline {
                     sh """
 						docker run --name ${CONTAINER_NAME} --network ${DOCKER_NETWORK} \
 							--cap-add=IPC_LOCK \
-							-v ~/vault/config:/vault/config \
-							-v ~/vault/data:/vault/data \
+							-v /var/lib/jenkins/workspace/vault/config:/vault/config \
+							-v /var/lib/jenkins/workspace/vault/data:/vault/data \
 							-p ${APP_PORT}:${APP_PORT} \
 							-d hashicorp/vault server -config=/vault/config/vault.hcl
                     """
