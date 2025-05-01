@@ -1,0 +1,23 @@
+pipeline {
+    agent any
+    stages {
+        stage('Remove Docker Container') {
+            steps {
+                script {
+                    // Define the container name
+                    def containerName = "my-container"
+                    
+                    // Check if the container exists and remove it
+                    sh """
+                        if [ \$(docker ps -a -q -f name=${containerName}) ]; then
+                            echo "Removing existing Docker container ${containerName}"
+                            docker rm -f ${containerName}
+                        else
+                            echo "Docker container ${containerName} does not exist"
+                        fi
+                    """
+                }
+            }
+        }
+    }
+}
