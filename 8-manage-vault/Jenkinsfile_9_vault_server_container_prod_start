@@ -1,0 +1,69 @@
+pipeline {
+    agent any
+    environment {
+        // Nom de l'image Docker
+        DOCKER_IMAGE = 'hashicorp/vault'
+        // Nom du conteneur
+        CONTAINER_NAME = 'container-vault-server'
+        // Port de l'application
+        APP_PORT = '8200'
+        // common-network
+        DOCKER_NETWORK = 'springboot-network'
+    }
+    stages {
+
+        stage('Start Vault Container') {
+            steps {
+                script {
+                    // Arrêter et supprimer tout conteneur existant
+                    sh """
+                        docker stop ${CONTAINER_NAME} || true
+                        docker rm ${CONTAINER_NAME} || true
+                    """
+                    
+					// Démarrer le container en mode PROD sur la network 'springboot-network'
+                    sh """
+						docker run --name ${CONTAINER_NAME} --network ${DOCKER_NETWORK} \
+							--cap-add=IPC_LOCK \
+							-v ~/vault/config:/vault/config \
+							-v ~/vault/data:/vault/data \
+							-p ${APP_PORT}:${APP_PORT} \
+							-d hashicorp/vault server -config=/vault/config/vault.hcl
+                    """
+                }
+            }
+        }
+
+        stage('Verify Container') {
+            steps {
+                script {
+                    sh """
+                        sleep 10
+                        docker ps --filter "name=${CONTAINER_NAME}" --filter "status=running" | grep ${CONTAINER_NAME}
+                        docker logs ${CONTAINER_NAME}
+                    """
+
+					// Vérifier que le server est prêt
+                    sh """
+                        for i in {1..10}; do
+                            curl -v --fail http://localhost:${APP_PORT} && break
+                            echo "Attente de l'application... (\$i/10)"
+                            sleep 5
+                        done
+                        curl -v --fail http://localhost:${APP_PORT} || exit 1
+                    """
+                }
+            }
+        }
+    }
+    post {
+//      always {
+//      }
+        success {
+            echo 'Container démarré avec succès !'
+        }
+        failure {
+            echo 'Echec du démarrage du Container !'
+        }
+    }
+}
