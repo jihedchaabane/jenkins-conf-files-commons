@@ -1,0 +1,67 @@
+pipeline {
+    agent any
+    environment {
+        // Nom de l'image Docker
+        DOCKER_IMAGE = 'jihed123/springboot-conf-admin-server:0.0.1-SNAPSHOT'
+        // Nom du conteneur
+        CONTAINER_NAME = 'container-springboot-conf-admin-server'
+        // Port de l'application
+        APP_PORT = '8763'
+        // common-network
+        DOCKER_NETWORK = 'springboot-network'
+        
+        // eureka-server url.
+        EUREKA_URL = 'http://container-springboot-conf-eureka-server:8761/eureka/'
+    }
+    stages {
+
+        stage('Start config-server') {
+            steps {
+                script {
+                    // Arrêter et supprimer tout conteneur existant
+                    sh """
+                        docker stop ${CONTAINER_NAME} || true
+                        docker rm ${CONTAINER_NAME} || true
+                    """
+                    
+					// Démarrer sur la network 'springboot-network'
+                    sh """
+                        docker run -e EUREKA_ADDR=${EUREKA_URL} -d --name ${CONTAINER_NAME} --network ${DOCKER_NETWORK} -p ${APP_PORT}:${APP_PORT} ${DOCKER_IMAGE}
+                    """
+                }
+            }
+        }
+
+        stage('Verify Container') {
+            steps {
+                script {
+                    sh """
+                        sleep 10
+                        docker ps --filter "name=${CONTAINER_NAME}" --filter "status=running" | grep ${CONTAINER_NAME}
+                        docker logs ${CONTAINER_NAME}
+                    """
+
+					// Vérifier que le container est prêt
+                    sh """
+                        for i in {1..10}; do
+                            curl -v --fail http://localhost:${APP_PORT}/actuator/health && break
+                            echo "Attente de l'application... (\$i/10)"
+                            sleep 5
+                        done
+                        curl -v --fail http://localhost:${APP_PORT}/actuator/health || exit 1
+                    """
+                }
+            }
+        }
+    }
+    post {
+//      always {
+//      }
+        success {
+            echo 'Container démarré avec succès !'
+        }
+        failure {
+            echo 'Echec du démarrage du Container !'
+        }
+    }
+}
