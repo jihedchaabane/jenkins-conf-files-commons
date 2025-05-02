@@ -2,7 +2,7 @@ pipeline {
     agent any
     stages {
 
-        stage('Stop Container') {
+        stage('Remove Container') {
             steps {
                 script {
                     // Supprimer tout conteneur existant
@@ -17,10 +17,10 @@ pipeline {
 //      always {
 //      }
         success {
-            echo 'conteneur arrêté avec succès !'
+            echo 'conteneur supprimé avec succès !'
         }
         failure {
-            echo 'Echec d\'arrêter le conteneur !'
+            echo 'Echec de suppression du conteneur !'
         }
     }
 }
