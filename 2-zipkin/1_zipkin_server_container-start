@@ -1,0 +1,58 @@
+pipeline {
+    agent any
+    environment {
+        ZIPKIN_CONTAINER_NAME = 'zipkin'
+        DOCKER_NETWORK = 'springboot-network'
+    }
+    stages {
+
+        stage('Start Zipkin') {
+            steps {
+                script {
+                    // Arrêter et supprimer tout conteneur Zipkin existant
+                    sh """
+                        docker stop ${ZIPKIN_CONTAINER_NAME} || true
+                        docker rm ${ZIPKIN_CONTAINER_NAME} || true
+                    """
+                    
+					// Démarrer Zipkin sur la network 'springboot-network'
+                    sh """
+                        docker run -d --name ${ZIPKIN_CONTAINER_NAME} --network ${DOCKER_NETWORK} -p 9411:9411 openzipkin/zipkin
+                    """
+                }
+            }
+        }
+
+        stage('Verify Container') {
+            steps {
+                script {
+                    sh """
+                        sleep 15
+                        docker ps --filter "name=${ZIPKIN_CONTAINER_NAME}" --filter "status=running" | grep ${ZIPKIN_CONTAINER_NAME}
+                        docker logs ${ZIPKIN_CONTAINER_NAME}
+                    """
+
+					// Vérifier que Zipkin est prêt
+                    sh """
+                        for i in {1..10}; do
+                            curl -v --fail http://localhost:9411/actuator/health && break
+                            echo "Attente de l'application... (\$i/10)"
+                            sleep 5
+                        done
+                        curl -v --fail http://localhost:9411/actuator/health || exit 1
+                    """
+                }
+            }
+        }
+    }
+    post {
+//      always {
+//      }
+        success {
+            echo 'zipkin démarré avec succès !'
+        }
+        failure {
+            echo 'Echec du démarrage de zipkin.'
+        }
+    }
+}
