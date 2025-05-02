@@ -1,8 +1,5 @@
 pipeline {
     agent any
-    environment {
-        CONTAINER_NAME = 'container-z-springboot-hello'
-    }
     stages {
 
         stage('Stop Container') {

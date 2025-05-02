@@ -1,8 +1,5 @@
 pipeline {
     agent any
-    environment {
-        CONTAINER_NAME = 'container-springboot-conf-config-server'
-    }
     stages {
 
         stage('Stop Container') {
@@ -20,10 +17,10 @@ pipeline {
 //      always {
 //      }
         success {
-            echo 'Container supprimé avec succès !'
+            echo 'conteneur arrêté avec succès !'
         }
         failure {
-            echo 'Echec de supprimer le Container !'
+            echo 'Echec d\'arrêter le conteneur !'
         }
     }
 }
