@@ -1,0 +1,36 @@
+pipeline {
+    agent any
+    tools {
+       // jdk 'JDK21'
+        maven 'MAVEN'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/jihedchaabane/first-app.git', branch: 'dockerfile'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                // Nom du serveur configuré dans l'étape 2
+                withSonarQubeEnv('SonarQubeServer') {
+                    sh '''
+                        mvn sonar:sonar \
+                            -Dsonar.java.binaries=. \
+                            -Dsonar.projectName=first-app -Dsonar.projectKey=first-app
+                    '''
+                }
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t first-app:0.0.1-SNAPSHOT .'
+            }
+        }
+    }
+}

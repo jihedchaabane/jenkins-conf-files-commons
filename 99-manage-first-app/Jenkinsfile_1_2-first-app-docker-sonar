@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+    tools {
+       // jdk 'JDK21'
+        maven 'MAVEN'
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/jihedchaabane/first-app.git', branch: 'dockerfile'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage ('Sonar Analysis') {
+            steps {
+                sh "mvn clean package"
+                sh ''' mvn sonar:sonar \
+                    -Dsonar.url=http://10.0.0.137:9000/ \
+                    -Dsonar.token=squ_15b86a8429d62f2046efc24c369bd7f7a990e424 \
+                    -Dsonar.java.binaries=. \
+                    -Dsonar.projectName=first-app -Dsonar.projectKey=first-app
+                '''
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                sh 'docker build -t first-app:0.0.1-SNAPSHOT .'
+            }
+        }
+    }
+}
