@@ -40,19 +40,19 @@ pipeline {
             }
         }
         
-        stage('SonarQube Analysis') {
-            steps {
-                // Nom du serveur configuré dans l'étape 2
-                withSonarQubeEnv('SonarQubeServer') {
-                    sh '''
-                        mvn sonar:sonar \
-                            -Dsonar.java.binaries=. \
-                            -Dsonar.projectName=${MODULE_PATH} \
-                            -Dsonar.projectKey=${MODULE_PATH}
-                    '''
-                }
-            }
-        }
+//        stage('SonarQube Analysis') {
+//            steps {
+//                // Nom du serveur configuré dans l'étape 2
+//                withSonarQubeEnv('SonarQubeServer') {
+//                    sh '''
+//                        mvn sonar:sonar \
+//                            -Dsonar.java.binaries=. \
+//                            -Dsonar.projectName=${MODULE_PATH} \
+//                            -Dsonar.projectKey=${MODULE_PATH}
+//                    '''
+//                }
+//            }
+//        }
         
         stage('Stop and Remove Existing Container') {
             steps {

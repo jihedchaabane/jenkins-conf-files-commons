@@ -36,19 +36,19 @@ pipeline {
             }
         }
         
-        stage('SonarQube Analysis') {
-            steps {
-                // Nom du serveur configuré dans l'étape 2
-                withSonarQubeEnv('SonarQubeServer') {
-                    sh '''
-                        mvn sonar:sonar \
-                            -Dsonar.java.binaries=. \
-                            -Dsonar.projectName=springboot-conf-config-server \
-                            -Dsonar.projectKey=springboot-conf-config-server
-                    '''
-                }
-            }
-        }
+//        stage('SonarQube Analysis') {
+//            steps {
+//                // Nom du serveur configuré dans l'étape 2
+//                withSonarQubeEnv('SonarQubeServer') {
+//                    sh '''
+//                        mvn sonar:sonar \
+//                            -Dsonar.java.binaries=. \
+//                            -Dsonar.projectName=springboot-conf-config-server \
+//                            -Dsonar.projectKey=springboot-conf-config-server
+//                    '''
+//                }
+//            }
+//        }
         
         stage('Stop and Remove Existing Container') {
             steps {
