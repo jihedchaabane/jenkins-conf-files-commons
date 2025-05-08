@@ -1,7 +1,7 @@
 pipeline {
     agent any
     environment {
-        ZIPKIN_CONTAINER_NAME = 'zipkin'
+        ZIPKIN_CONTAINER_NAME = 'container-zipkin'
     }
     stages {
 
